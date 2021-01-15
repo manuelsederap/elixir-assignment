@@ -1,45 +1,294 @@
 defmodule WeatherForecastTest do
 
-  alias AssignmentWeb.Graphql.Resolver.WeatherForecast, as: WF
+  use AssignmentWeb.ConnCase
   use ExUnit.Case, async: true
 
+  test "with valid params" do
+    query = """
+      query {
+        weatherForecast(latitude: "52.3667", longitude: "4.8945") {
+          date
+          sunrise,
+          sunset,
+          temperature,
+          feelslike,
+          latitude,
+          longitude,
+          weather {
+              description,
+              main
+          },
+          daily {
+              date
+              pressure
+              humidity
+              temperature {
+                  day
+                  min
+                  max
+                  night
+                  evening
+                  morning
+              }
+              feelslike {
+                  day
+                  night
+                  evening
+                  morning
+              }
+          }
+        }
+      }
+    """
+    conn =
+      post(
+        Plug.Conn.put_req_header(build_conn(), "content-type", "plain/text"),
+        "/graphiql",
+        query
+      )
+    
+    response = json_response(conn, 200)["data"]["weatherForecast"]
+    assert response["latitude"] === 52.3667
+    assert response["longitude"] === 4.8945
+  end
+
   test "with no latitude and longitude" do
-    params = %{
-      latitude: "",
-      longitude: ""
-    }
-    assert WF.get_weather_forecast(params) == {:error, [message: "Enter latitude and longitude"]}
+    query = """
+      query {
+        weatherForecast(latitude: "", longitude: "") {
+          date
+          sunrise,
+          sunset,
+          temperature,
+          feelslike,
+          latitude,
+          longitude,
+          weather {
+              description,
+              main
+          },
+          daily {
+              date
+              pressure
+              humidity
+              temperature {
+                  day
+                  min
+                  max
+                  night
+                  evening
+                  morning
+              }
+              feelslike {
+                  day
+                  night
+                  evening
+                  morning
+              }
+          }
+        }
+      }
+    """
+    conn =
+      post(
+        Plug.Conn.put_req_header(build_conn(), "content-type", "plain/text"),
+        "/graphiql",
+        query
+      )
+    
+    response = json_response(conn, 200)["errors"]
+    assert List.first(response)["message"] == "Enter latitude and longitude"
   end
 
   test "with no latitude but valid longitude" do
-    params = %{
-      latitude: "",
-      longitude: "-94.037689"
-    }
-    assert WF.get_weather_forecast(params) == {:error, [message: "Enter latitude"]}
+    query = """
+      query {
+        weatherForecast(latitude: "", longitude: "-94.037689") {
+          date
+          sunrise,
+          sunset,
+          temperature,
+          feelslike,
+          latitude,
+          longitude,
+          weather {
+              description,
+              main
+          },
+          daily {
+              date
+              pressure
+              humidity
+              temperature {
+                  day
+                  min
+                  max
+                  night
+                  evening
+                  morning
+              }
+              feelslike {
+                  day
+                  night
+                  evening
+                  morning
+              }
+          }
+        }
+      }
+    """
+    conn =
+      post(
+        Plug.Conn.put_req_header(build_conn(), "content-type", "plain/text"),
+        "/graphiql",
+        query
+      )
+    
+    response = json_response(conn, 200)["errors"]
+    assert List.first(response)["message"] == "Enter latitude"
   end
 
   test "with no longitude but valid latitude" do
-    params = %{
-      latitude: "33.441792",
-      longitude: ""
-    }
-    assert WF.get_weather_forecast(params) == {:error, [message: "Enter longitude"]}
+    query = """
+      query {
+        weatherForecast(latitude: "33.441792", longitude: "") {
+          date
+          sunrise,
+          sunset,
+          temperature,
+          feelslike,
+          latitude,
+          longitude,
+          weather {
+              description,
+              main
+          },
+          daily {
+              date
+              pressure
+              humidity
+              temperature {
+                  day
+                  min
+                  max
+                  night
+                  evening
+                  morning
+              }
+              feelslike {
+                  day
+                  night
+                  evening
+                  morning
+              }
+          }
+        }
+      }
+    """
+    conn =
+      post(
+        Plug.Conn.put_req_header(build_conn(), "content-type", "plain/text"),
+        "/graphiql",
+        query
+      )
+    
+    response = json_response(conn, 200)["errors"]
+    assert List.first(response)["message"] == "Enter longitude"
   end
 
   test "with invalid latitude" do
-    params = %{
-      latitude: "invalid",
-      longitude: "-94.037689"
-    }
-    assert WF.get_weather_forecast(params) == {:error, [message: "wrong latitude"]}
+    query = """
+      query {
+        weatherForecast(latitude: "invalid", longitude: "-94.037689") {
+          date
+          sunrise,
+          sunset,
+          temperature,
+          feelslike,
+          latitude,
+          longitude,
+          weather {
+              description,
+              main
+          },
+          daily {
+              date
+              pressure
+              humidity
+              temperature {
+                  day
+                  min
+                  max
+                  night
+                  evening
+                  morning
+              }
+              feelslike {
+                  day
+                  night
+                  evening
+                  morning
+              }
+          }
+        }
+      }
+    """
+    conn =
+      post(
+        Plug.Conn.put_req_header(build_conn(), "content-type", "plain/text"),
+        "/graphiql",
+        query
+      )
+    
+    response = json_response(conn, 200)["errors"]
+    assert List.first(response)["message"] == "wrong latitude"
   end
 
   test "with invalid longitude" do
-    params = %{
-      latitude: "33.441792",
-      longitude: "invalid"
-    }
-    assert WF.get_weather_forecast(params) == {:error, [message: "wrong longitude"]}
-  end
+    query = """
+      query {
+        weatherForecast(latitude: "33.441792", longitude: "invalid") {
+          date
+          sunrise,
+          sunset,
+          temperature,
+          feelslike,
+          latitude,
+          longitude,
+          weather {
+              description,
+              main
+          },
+          daily {
+              date
+              pressure
+              humidity
+              temperature {
+                  day
+                  min
+                  max
+                  night
+                  evening
+                  morning
+              }
+              feelslike {
+                  day
+                  night
+                  evening
+                  morning
+              }
+          }
+        }
+      }
+    """
+    conn =
+      post(
+        Plug.Conn.put_req_header(build_conn(), "content-type", "plain/text"),
+        "/graphiql",
+        query
+      )
+    
+    response = json_response(conn, 200)["errors"]
+    assert List.first(response)["message"] == "wrong longitude"
+  end  
 end
